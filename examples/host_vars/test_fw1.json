@@ -1,0 +1,109 @@
+{
+    "interfaces": [
+        {
+            "interface": "",
+            "ip": "1.1.3.207 255.255.255.254",
+            "name": "port3",
+            "status": "up",
+            "vdom": "root",
+            "vlanforward": "disable",
+            "vlanid": 0,
+            "vrrp-virtual-mac": "disable"
+        },
+        {
+            "interface": "",
+            "ip": "10.66.255.1 255.255.255.248",
+            "name": "port4",
+            "status": "up",
+            "vdom": "root",
+            "vlanforward": "enable",
+            "vlanid": 0,
+            "vrrp-virtual-mac": "disable"
+        },
+        {
+            "interface": "",
+            "ip": "10.66.255.9 255.255.255.252",
+            "name": "port5",
+            "status": "down",
+            "vdom": "root",
+            "vlanforward": "enable",
+            "vlanid": 0,
+            "vrrp-virtual-mac": "disable"
+        },
+        {
+            "interface": "",
+            "ip": "10.66.255.13 255.255.255.252",
+            "name": "port6",
+            "status": "down",
+            "vdom": "root",
+            "vlanforward": "enable",
+            "vlanid": 0,
+            "vrrp-virtual-mac": "disable"
+        },
+        {
+            "interface": "port4",
+            "ip": "1.1.16.26 255.255.255.248",
+            "name": "net_pub",
+            "status": "up",
+            "vdom": "root",
+            "vlanforward": "disable",
+            "vlanid": 4,
+            "vrrp-virtual-mac": "enable"
+        },
+        {
+            "interface": "port4",
+            "ip": "10.254.166.2 255.255.255.192",
+            "name": "replication_net",
+            "status": "up",
+            "vdom": "root",
+            "vlanforward": "disable",
+            "vlanid": 3333,
+            "vrrp-virtual-mac": "enable"
+        }
+    ],
+    "ntp": {
+        "interface": "port1",
+        "ntpserver": [
+            {
+                "server": "ntp-a.boulder.nist.gov"
+            },
+            {
+                "server": "time.nist.gov"
+            },
+            {
+                "server": "clock.nyc.he.net"
+            }
+        ],
+        "server-mode": "enable",
+        "type": "custom"
+    },
+    "system_global": [
+        {
+            "admintimeout": 30,
+            "hostname": "Test-FW",
+            "timezone": "80"
+        }
+    ],
+    "vrrp": [
+        {
+            "name": "net_pub",
+            "params": [
+                {
+                    "priority": 255,
+                    "vrid": 1,
+                    "vrip": "1.1.16.25"
+                }
+            ]
+        },
+        {
+            "name": "replication_net",
+            "params": [
+                {
+                    "priority": 200,
+                    "vrid": 1,
+                    "vrip": "10.254.166.1"
+                }
+            ]
+        }
+    ]
+}

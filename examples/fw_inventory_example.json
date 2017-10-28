@@ -1,0 +1,98 @@
+[
+  {
+    "hosts": "test_fw1",
+    "connection": "local",
+    "gather_facts": false,
+    "vars": {
+      "test_fw": {
+        "fortigate_username": "admin",
+        "fortigate_password": "{{ pw }}",
+        "fortigate_ip": "{{ ip }}",
+        "secure": "{{ secure }}",
+        "port": "{{ port }}",
+        "verify": false
+      }
+    },
+    "tasks": [
+      {
+        "name": "set system global setup",
+        "tags": [
+          "system_global",
+          "system"
+        ],
+        "fortios_api_system_global": {
+          "print_current_config": false,
+          "conn_params": "{{ test_fw }}",
+          "global": "{{ system_global }}"
+        }
+      },
+      {
+        "name": "Update All Interfaces",
+        "tags": [
+          "interfaces"
+        ],
+        "fortios_api_interface": {
+          "conn_params": "{{ test_fw }}",
+          "print_current_config": false,
+          "permanent_objects": [
+            "ssl.root",
+            "port2",
+            "port3",
+            "port4",
+            "port5",
+            "port6",
+            "port7",
+            "port8",
+            "port9",
+            "port10"
+          ],
+          "ignore_objects": [
+            "port1",
+            "mgmt1"
+          ],
+          "interfaces": "{{ interfaces }}"
+        }
+      },
+      {
+        "name": "Configure VRRP",
+        "tags": [
+          "interfaces"
+        ],
+        "fortios_api": {
+          "endpoint_information": {
+            "endpoint": "cmdb/system/interface/{{ item.name }}/vrrp",
+            "list_identifier": "vrrp",
+            "object_identifier": "vrid"
+          },
+          "conn_params": "{{ test_fw }}",
+          "vrrp": "{{ item.params }}"
+        },
+        "with_items": [
+          "{{ vrrp }}"
+        ]
+      },
+      {
+        "name": "Update system admin",
+        "tags": [
+          "system_admin",
+          "system"
+        ],
+        "fortios_api_system_admin": {
+          "conn_params": "{{ test_fw }}",
+          "admins": "{{ system_admins }}"
+        }
+      },
+      {
+        "name": "set system dns setup",
+        "tags": [
+          "dns",
+          "system"
+        ],
+        "fortios_api_system_dns": {
+          "conn_params": "{{ test_fw }}",
+          "dns": "{{ system_dns }}"
+        }
+      }
+    ]
+  }
+]

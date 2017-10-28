@@ -1,0 +1,710 @@
+[
+  {
+    "hosts": "test",
+    "connection": "local",
+    "gather_facts": false,
+    "vars": {
+      "test_fw": {
+        "fortigate_username": "admin",
+        "fortigate_password": "test",
+        "fortigate_ip": "{{ ip }}",
+        "secure": "{{ secure }}",
+        "port": "{{ port }}",
+        "verify": false
+      }
+    },
+    "tasks": [
+      {
+        "name": "set system global setup",
+        "tags": [
+          "hostname"
+        ],
+        "fortios_api_system_global": {
+          "print_current_config": false,
+          "conn_params": "{{ test_fw }}",
+          "global": [
+            {
+              "admintimeout": 99,
+              "hostname": "FW-test",
+              "timezone": "80",
+              "vdom-admin": "disable"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Update All Interfaces",
+        "tags": [
+          "interfaces"
+        ],
+        "fortios_api_interface": {
+          "conn_params": "{{ test_fw }}",
+          "permanent_objects": [
+            "ssl.root",
+            "port1",
+            "port2",
+            "port3",
+            "port4",
+            "port5",
+            "port6",
+            "port7",
+            "port8",
+            "port9",
+            "port10"
+          ],
+          "interfaces": [
+            {
+              "name": "port1",
+              "allowaccess": "ping ssh http",
+              "ip": "192.0.2.5 255.255.255.0",
+              "type": "physical",
+              "description": "Management"
+            },
+            {
+              "name": "port2",
+              "vdom": "root",
+              "ipv6": {
+                "autoconf": "disable",
+                "dhcp6-client-options": "iapd iana dns",
+                "dhcp6-prefix-delegation": "enable",
+                "dhcp6-prefix-hint": "::/61",
+                "ip6-allowaccess": "ping",
+                "ip6-mode": "dhcp"
+              }
+            },
+            {
+              "name": "port3",
+              "vdom": "root",
+              "allowaccess": "ping https http",
+              "type": "physical",
+              "ip": "192.0.5.4 255.255.255.0"
+            },
+            {
+              "name": "port5",
+              "vdom": "root",
+              "vlanforward": "enable",
+              "type": "physical"
+            },
+            {
+              "name": "testint",
+              "vdom": "root",
+              "allowaccess": "ping",
+              "ip": "192.0.3.56 255.255.255.0",
+              "role": "lan",
+              "interface": "port5",
+              "vlanid": 5,
+              "vrrp-virtual-mac": "enable"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Update vrrp for testint",
+        "tags": [
+          "interfaces"
+        ],
+        "fortios_api": {
+          "endpoint_information": {
+            "endpoint": "cmdb/system/interface/testint/vrrp",
+            "list_identifier": "vrrp",
+            "object_identifier": "vrid"
+          },
+          "conn_params": "{{ test_fw }}",
+          "vrrp": [
+            {
+              "vrid": 1,
+              "vrip": "192.0.3.1",
+              "priority": 200
+            }
+          ]
+        }
+      },
+      {
+        "name": "Update system admin",
+        "tags": [
+          "system_admin"
+        ],
+        "fortios_api_system_admin": {
+          "conn_params": "{{ test_fw }}",
+          "admins": [
+            {
+              "name": "test_admin",
+              "comments": "test_update",
+              "password": "test1",
+              "accprofile": "prof_admin",
+              "trusthost1": "192.168.0.0 255.254.0.0"
+            },
+            {
+              "name": "admin",
+              "comments": "manually configured admin"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set system ha setup",
+        "tags": [
+          "ha"
+        ],
+        "fortios_api_system_ha": {
+          "conn_params": "{{ test_fw }}",
+          "ha": [
+            {
+              "group-name": "testha",
+              "hbdev": "\"port10\" 2 ",
+              "mode": "standalone",
+              "priority": 200
+            }
+          ]
+        }
+      },
+      {
+        "name": "set system dns setup",
+        "tags": [
+          "dns"
+        ],
+        "fortios_api_system_dns": {
+          "conn_params": "{{ test_fw }}",
+          "dns": [
+            {
+              "primary": "8.8.8.8",
+              "secondary": "8.8.4.4",
+              "source-ip": "192.0.2.5"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set system snmp sysinfo",
+        "tags": [
+          "snmp"
+        ],
+        "fortios_api_snmp_sysinfo": {
+          "conn_params": "{{ test_fw }}",
+          "sysinfo": [
+            {
+              "status": "enable"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set system snmp sysinfo",
+        "tags": [
+          "snmp"
+        ],
+        "fortios_api_snmp_community": {
+          "conn_params": "{{ test_fw }}",
+          "community": [
+            {
+              "id": 1,
+              "events": "cpu-high mem-low log-full intf-ip vpn-tun-up vpn-tun-down ha-switch ha-hb-failure ips-signature ips-anomaly av-virus av-oversize av-pattern av-fragmented fm-if-change bgp-established bgp-backward-transition ha-member-up ha-member-down ent-conf-change av-conserve av-bypass av-oversize-passed av-oversize-blocked ips-pkg-update ips-fail-open faz-disconnect fswctl-session-up fswctl-session-down load-balance-real-server-down",
+              "hosts": [
+                {
+                  "id": 1,
+                  "ip": "10.0.0.2 255.255.255.255"
+                }
+              ],
+              "name": "public",
+              "status": "enable",
+              "trap-v1-status": "enable",
+              "trap-v2c-status": "enable"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set system syslog setting",
+        "tags": [
+          "syslog"
+        ],
+        "fortios_api_syslogd_setting": {
+          "conn_params": "{{ test_fw }}",
+          "setting": [
+            {
+              "server": "10.0.0.3",
+              "status": "enable"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set system ntp settings",
+        "tags": [
+          "ntp"
+        ],
+        "fortios_api_ntp_server": {
+          "conn_params": "{{ test_fw }}",
+          "ntpserver": [
+            {
+              "authentication": "disable",
+              "id": 1,
+              "server": "time.nist.gov"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set system ntp settings",
+        "tags": [
+          "ntp"
+        ],
+        "fortios_api_system_ntp": {
+          "conn_params": "{{ test_fw }}",
+          "ntp": [
+            {
+              "type": "custom"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set firewall addresses",
+        "tags": [
+          "fw_address",
+          "fw"
+        ],
+        "fortios_api_firewall_address": {
+          "conn_params": "{{ test_fw }}",
+          "address": [
+            {
+              "name": "test",
+              "type": "fqdn",
+              "fqdn": "test.com"
+            },
+            {
+              "name": "test2",
+              "type": "ipmask",
+              "subnet": "1.1.1.1 255.255.255.255"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set firewall address group",
+        "tags": [
+          "fw_address",
+          "fw"
+        ],
+        "fortios_api_firewall_addrgrp": {
+          "conn_params": "{{ test_fw }}",
+          "addrgrp": [
+            {
+              "name": "test_grp",
+              "member": [
+                {
+                  "name": "test"
+                },
+                {
+                  "name": "test2"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "update firewall services",
+        "tags": [
+          "firewall_services",
+          "fw"
+        ],
+        "fortios_api_firewall_service": {
+          "conn_params": "{{ test_fw }}",
+          "services": [
+            {
+              "name": "test_rule",
+              "comment": "single_tcp_2004",
+              "tcp-portrange": "2004"
+            },
+            {
+              "name": "test_svc_with_range_and_tcpudp",
+              "tcp-portrange": "80 443 200-201",
+              "udp-portrange": "53",
+              "comment": "This is a comment"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set firewall IP pool",
+        "tags": [
+          "fw_ippool",
+          "fw"
+        ],
+        "fortios_api_firewall_ippool": {
+          "conn_params": "{{ test_fw }}",
+          "ippool": [
+            {
+              "name": "test_pool",
+              "type": "one-to-one",
+              "startip": "1.2.3.4",
+              "endip": "1.2.3.4"
+            },
+            {
+              "name": "test_pool_overload",
+              "type": "overload",
+              "startip": "2.2.3.4",
+              "endip": "2.2.3.5"
+            }
+          ]
+        }
+      },
+      {
+        "name": "set firewall IP pool",
+        "tags": [
+          "fw_vip",
+          "fw"
+        ],
+        "fortios_api_firewall_vip": {
+          "conn_params": "{{ test_fw }}",
+          "print_current_config": false,
+          "vip": [
+            {
+              "name": "test_vip",
+              "extintf": "port3",
+              "extip": "192.0.5.10",
+              "mappedip": [
+                {
+                  "range": "1.2.3.4"
+                }
+              ]
+            },
+            {
+              "name": "test_vip_range",
+              "extintf": "port3",
+              "extip": "192.0.5.11-192.0.5.12",
+              "mappedip": [
+                {
+                  "range": "1.2.3.5-1.2.3.6"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "update firewall policies",
+        "tags": [
+          "fw",
+          "fw_policy"
+        ],
+        "fortios_api_firewall_policy": {
+          "conn_params": "{{ test_fw }}",
+          "policies": [
+            {
+              "policyid": 2,
+              "srcintf": [
+                {
+                  "name": "port3"
+                }
+              ],
+              "dstintf": [
+                {
+                  "name": "port5"
+                }
+              ],
+              "srcaddr": [
+                {
+                  "name": "all"
+                }
+              ],
+              "dstaddr": [
+                {
+                  "name": "all"
+                }
+              ],
+              "schedule": "always",
+              "service": [
+                {
+                  "name": "HTTPS"
+                }
+              ],
+              "comments": "test2",
+              "name": "test_rule2",
+              "action": "deny"
+            },
+            {
+              "policyid": 7,
+              "srcintf": [
+                {
+                  "name": "port3"
+                }
+              ],
+              "dstintf": [
+                {
+                  "name": "port5"
+                }
+              ],
+              "srcaddr": [
+                {
+                  "name": "all"
+                }
+              ],
+              "dstaddr": [
+                {
+                  "name": "all"
+                }
+              ],
+              "action": "accept",
+              "schedule": "always",
+              "service": [
+                {
+                  "name": "test_rule"
+                }
+              ],
+              "comments": "allow_test_rule",
+              "name": "test_rule3"
+            },
+            {
+              "policyid": 4,
+              "srcintf": [
+                {
+                  "name": "port5"
+                }
+              ],
+              "dstintf": [
+                {
+                  "name": "port3"
+                }
+              ],
+              "srcaddr": [
+                {
+                  "name": "all"
+                }
+              ],
+              "dstaddr": [
+                {
+                  "name": "all"
+                }
+              ],
+              "action": "accept",
+              "schedule": "always",
+              "service": [
+                {
+                  "name": "test_svc_with_range_and_tcpudp"
+                }
+              ],
+              "name": "Test outbound with NAT",
+              "nat": "enable"
+            }
+          ]
+        }
+      },
+      {
+        "name": "update router prefix-list",
+        "tags": [
+          "prefix_list"
+        ],
+        "fortios_api_prefix_list": {
+          "conn_params": "{{ test_fw }}",
+          "prefixes": [
+            {
+              "name": "default_only",
+              "rule": [
+                {
+                  "prefix": "0.0.0.0 0.0.0.0"
+                }
+              ]
+            },
+            {
+              "name": "test_block",
+              "rule": [
+                {
+                  "prefix": "10.254.160.0 255.255.240.0"
+                },
+                {
+                  "prefix": "2.0.0.0 255.0.0.0"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "update router route-map",
+        "tags": [
+          "route_map"
+        ],
+        "fortios_api_route_map": {
+          "print_current_config": false,
+          "conn_params": "{{ test_fw }}",
+          "route-map": [
+            {
+              "comments": "comment",
+              "name": "test_default",
+              "rule": [
+                {
+                  "match-flags": 2,
+                  "match-ip-address": "default_only",
+                  "set-flags": 0
+                },
+                {
+                  "match-flags": 2,
+                  "match-ip-address": "test_block",
+                  "set-flags": 2,
+                  "set-metric": 200
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "Test OSPF",
+        "tags": [
+          "ospf"
+        ],
+        "fortios_api_router_ospf": {
+          "print_current_config": false,
+          "conn_params": "{{ test_fw }}",
+          "ospf": [
+            {
+              "auto-cost-ref-bandwidth": 100000,
+              "default-information-originate": "enable",
+              "default-information-metric": 150,
+              "router-id": "1.2.3.4",
+              "area": [
+                {
+                  "id": "0.0.0.0"
+                }
+              ],
+              "network": [
+                {
+                  "prefix": "192.0.5.0 255.255.255.0",
+                  "area": "0.0.0.0"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "Test OSPF Interface",
+        "tags": [
+          "ospf"
+        ],
+        "fortios_api_router_ospf_interface": {
+          "print_current_config": false,
+          "conn_params": "{{ test_fw }}",
+          "interface": [
+            {
+              "name": "test",
+              "interface": "port3",
+              "authentication": "md5",
+              "md5-key": "1 asd"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Update link-monitor",
+        "tags": "link-monitor",
+        "fortios_api_link_monitor": {
+          "conn_params": "{{ test_fw }}",
+          "monitor": [
+            {
+              "name": "google_dns",
+              "protocol": "ping",
+              "server": [
+                {
+                  "address": "8.8.4.4"
+                }
+              ],
+              "srcintf": "port5"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Check vdom",
+        "tags": "vdom",
+        "fortios_api_system_vdom": {
+          "conn_params": "{{ test_fw }}",
+          "vdoms": [
+            {
+              "name": "root"
+            }
+          ]
+        }
+      },
+      {
+        "name": "Test BGP",
+        "tags": [
+          "bgp"
+        ],
+        "fortios_api_router_bgp": {
+          "print_current_config": false,
+          "conn_params": "{{ test_fw }}",
+          "bgp": [
+            {
+              "as": 65001,
+              "router-id": "192.0.5.1",
+              "log-neighbour-changes": "enable",
+              "graceful-restart": "enable",
+              "neighbor": [
+                {
+                  "ip": "192.0.5.2",
+                  "soft-reconfiguration": "enable",
+                  "remote-as": 65002,
+                  "prefix-list-in": "default_only"
+                }
+              ],
+              "aggregate-address": [
+                {
+                  "prefix": "10.254.166.0 255.255.254.0"
+                },
+                {
+                  "prefix": "10.254.164.0 255.255.252.0"
+                }
+              ],
+              "network": [
+                {
+                  "prefix": "10.254.166.0 255.255.255.0"
+                }
+              ],
+              "redistribute": [
+                {
+                  "name": "connected",
+                  "status": "enable",
+                  "route-map": "test_default"
+                },
+                {
+                  "name": "rip",
+                  "status": "disable"
+                },
+                {
+                  "name": "ospf",
+                  "status": "disable"
+                },
+                {
+                  "name": "static",
+                  "status": "disable"
+                },
+                {
+                  "name": "isis",
+                  "status": "disable"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "name": "Test DHCP server",
+        "tags": [
+          "dhcp"
+        ],
+        "fortios_api": {
+          "endpoint_information": {
+            "endpoint": "cmdb/system.dhcp/server",
+            "list_identifier": "servers",
+            "object_identifier": "id"
+          },
+          "conn_params": "{{ test_fw }}",
+          "servers": []
+        }
+      }
+    ]
+  }
+]

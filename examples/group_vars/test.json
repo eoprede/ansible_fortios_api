@@ -1,0 +1,80 @@
+{
+    "log_settings": [
+        {
+            "name": "syslogd",
+            "server": "10.0.5.98",
+            "status": "enable"
+        },
+        {
+            "name": "syslogd2",
+            "server": "10.0.5.99",
+            "status": "enable"
+        },
+        {
+            "name": "syslogd3",
+            "server": "10.0.5.88",
+            "status": "enable"
+        }
+    ],
+    "snmp_community": [
+        {
+            "events": [
+                "cpu-high",
+                "mem-low",
+                "log-full",
+                "intf-ip",
+                "vpn-tun-up",
+                "vpn-tun-down",
+                "ha-switch",
+                "ha-hb-failure",
+                "ips-signature",
+                "ips-anomaly",
+                "av-virus",
+                "av-oversize",
+                "av-pattern",
+                "av-fragmented",
+                "fm-if-change",
+                "bgp-established",
+                "bgp-backward-transition",
+                "ha-member-up",
+                "ha-member-down",
+                "ent-conf-change",
+                "av-conserve",
+                "av-bypass",
+                "av-oversize-passed",
+                "av-oversize-blocked",
+                "ips-pkg-update",
+                "ips-fail-open",
+                "power-supply-failure",
+                "faz-disconnect",
+                "wc-ap-up",
+                "wc-ap-down"
+            ],
+            "hosts": [
+                "10.0.5.98 255.255.255.255",
+                "10.0.5.99 255.255.255.255"
+            ],
+            "name": "public"
+        }
+    ],
+    "system_admins": [
+        {
+              "name": "test_admin",
+              "comments": "test_update",
+              "password": "test1",
+              "accprofile": "prof_admin",
+              "trusthost1": "192.168.0.0 255.254.0.0"
+            },
+        {
+            "name": "admin",
+            "trusthost1": "10.0.0.0 255.0.0.0",
+            "trusthost2": "192.0.0.0 255.0.0.0"
+        }
+    ],
+    "system_dns": [
+        {
+            "primary": "4.2.2.2",
+            "secondary": "8.8.8.8"
+        }
+    ]
+}
