@@ -48,7 +48,8 @@ You can see examples of how this module can be used in the module itself (for se
 
 ## Parameters
 Hopefully most of the parameters are self-explanatory and don't need any additional clarifcation, but there are some I want to clarify.
-```endpoint_information - dictionary with information about API endpoint. You will see it only with fortios_api module
+```
+endpoint_information - dictionary with information about API endpoint. You will see it only with fortios_api module
     endpoint - the API endpoint path
     list_identifier - the name of the list from which module will take objects
     object_identifier - if the list has multiple objects, module needs to know how this objects are identified in API (usually by name or id)
@@ -66,7 +67,8 @@ list_of_objects - this is the list referenced in list_identifier. Its name and c
 permanent_objects - objects by ID that can not be deleted. Instead, when they are not present in the end state config, module will try to
                     reset them to defaults. Currently used only in the interface module.
 ignore_objects - objects by ID that will be ignored by the module. Useful if you don't want your module to mess with management interface,
-                 also can be used to not mess with built-in firewall addresses or services (see example playbooks).```
+                 also can be used to not mess with built-in firewall addresses or services (see example playbooks).
+```
 
 ## Known gotchas
 This module will write some files in the folder you are running it from (specifically it will write argument spec and current config if
