@@ -1,0 +1,2 @@
+[test]
+test_fw1 ip=192.0.2.5 secure=False port=80
