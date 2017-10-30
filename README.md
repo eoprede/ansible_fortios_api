@@ -25,6 +25,7 @@ fw_inventory_example playbook goes through some configuration and shows one of t
 
 ## How this module works
 This module serves as the interface between Ansible and Fortios API. It can take any parameter that API accepts and send it over.
+
 It's very important to note that this module takes the end-state config on the object level. I.e. if you have policies 1, 2 and 3
 configured on the Firewall and you run a playbook that has policies 4 and 5, the end configuration on the firewall will have
 policies 4 and 5 configured, while policied 1-3 will be deleted.
@@ -74,6 +75,11 @@ ignore_objects - objects by ID that will be ignored by the module. Useful if you
 This module will write some files in the folder you are running it from (specifically it will write argument spec and current config if
 you request it). I have not tested how it will work if it is run on a remote host. If the API changes at some point, you may need to
 delete the local files so that argument spec is renegarated and can accept new values.
+
+The module tries to make sure that config changes made it through to the firewall, but is not smart enough to understand that some
+values are identical. I.e. if you send firewall 10.0.0.0/8, it will save it as 10.0.0.0 255.0.0.0.0 and will return that value back.
+Module would think that there's an issue and revert config back. To work around the issue, provide values in the same format as they
+are stored in the firewall.
 
 Module requires requests library to function. If you want to use socks proxy, make sure you install socks support for requests as well.
 
