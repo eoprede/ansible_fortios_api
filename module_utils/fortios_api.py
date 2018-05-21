@@ -378,8 +378,7 @@ class API(object):
 
     def _get_current_configuration(self):
         try:
-            self._fortigate_current_config = self._show(self._endpoint)[
-                'results']
+            self._fortigate_current_config = self._show(self._endpoint)['results']
         except KeyError:
             self.fail("Failed to find any configuration at %s" %
                       self._endpoint)
@@ -399,7 +398,7 @@ class API(object):
 
     def _delete_unused_objects(self):
         if not self._update_config and not self._check_mode:
-            self._delete(self._endpoint)
+            self._remove(self._endpoint)
             self._get_current_configuration()
 
         unused_objects = [identifier for identifier in self._existing_object_ids
