@@ -315,6 +315,7 @@ class FirewallAPI(API):
         return None
 
     def _build_object_map(self):
+        self._get_current_configuration()
         if not self._update_config:
             self._object_map = [None] * len(self._fortigate_current_config)
         else:
