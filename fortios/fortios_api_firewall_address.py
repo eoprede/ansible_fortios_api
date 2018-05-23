@@ -96,6 +96,7 @@ system_global_api_args = {
     'default_ignore_params': [],
     "ignore_objects": [
         "Adobe Login",
+        "FIREWALL_AUTH_PORTAL_ADDRESS",
         "Gotomeeting",
         "SSLVPN_TUNNEL_ADDR1",
         "Windows update 2",
