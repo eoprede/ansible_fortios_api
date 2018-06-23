@@ -1,0 +1,45 @@
+[
+  {
+    "name": "Create rule with id 200 and remove rule with id 100",
+    "fortios_api_firewall_policy": {
+      "conn_params": "{{ test_fw }}",
+      "vdom": "test_vdom",
+      "full_config": false,
+      "delete_objects": [
+        100
+      ],
+      "policies": [
+        {
+          "policyid": 200,
+          "service": [
+            {
+              "name": "HTTP"
+            }
+          ],
+          "srcintf": [
+            {
+              "name": "SUPPORT"
+            }
+          ],
+          "srcaddr": [
+            {
+              "name": "AD"
+            }
+          ],
+          "dstintf": [
+            {
+              "name": "APP"
+            }
+          ],
+          "dstaddr": [
+            {
+              "name": "all"
+            }
+          ],
+          "action": "accept",
+          "schedule": "always"
+        }
+      ]
+    }
+  }
+]
