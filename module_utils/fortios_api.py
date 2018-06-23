@@ -411,7 +411,10 @@ class API(object):
                           identifier not in self._permanent_object_ids and
                           identifier not in self._ignore_object_ids]
         else:
-            unused_objects = self._delete_objects
+            unused_objects = [identifier for identifier in self._delete_objects
+                          if identifier not in self._used_object_ids and
+                          identifier not in self._permanent_object_ids and
+                          identifier not in self._ignore_object_ids]
 
         failures = {}
         for object_identifier in unused_objects:
@@ -450,8 +453,12 @@ class API(object):
                             not self._diff_unknown(self._get_current_object(o), o)]
         self._object_ids_to_update = [o[self._object_identifier] for o in self._update_config if o[self._object_identifier] in self._existing_object_ids and
                                       o[self._object_identifier] not in matching_objects]
-        self._permanent_object_ids_to_reset = [obj_id for obj_id in self._permanent_object_ids if obj_id not in self._object_ids_to_update and
+        if self._update_config:
+            self._permanent_object_ids_to_reset = [obj_id for obj_id in self._permanent_object_ids if obj_id not in self._object_ids_to_update and
                                                obj_id not in matching_objects]
+        else:
+            self._permanent_object_ids_to_reset = [obj_id for obj_id in self._permanent_object_ids if obj_id in self._delete_objects and
+                                                not in self._object_ids_to_update and obj_id not in matching_objects]
 
         failures = {}
         self._update_temporary_and_permanent_objects(failures)
