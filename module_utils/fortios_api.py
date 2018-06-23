@@ -401,7 +401,7 @@ class API(object):
                 self.fail("No or incorrect object identifier specified. List endpoints require an object identifier, typically name or id.")
 
     def _delete_unused_objects(self):
-        if not self._update_config and not self._check_mode:
+        if not self._update_config and not self._check_mode and not self._full_config:
             self._remove(self._endpoint)
             self._get_current_configuration()
 
@@ -415,7 +415,17 @@ class API(object):
 
         failures = {}
         for object_identifier in unused_objects:
-            if not self._check_mode:
+            if not self._full_config:
+                response = self._remove(
+                    '/'.join([self._endpoint, str(object_identifier)]))
+                if response['http_status'] == 200:
+                    self._remove_object_from_current_config(object_identifier)
+                elif response['http_status'] == 404:
+                    continue #trying to remove object that doesn't exist, no actions needed
+                else:
+                    failures[object_identifier] = self.http_status_codes[
+                        response['http_status']]
+            elif not self._check_mode:
                 response = self._remove(
                     '/'.join([self._endpoint, str(object_identifier)]))
                 if response['http_status'] == 200:
