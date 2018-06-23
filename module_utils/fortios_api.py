@@ -226,7 +226,7 @@ fortios_api_argument_spec = dict(
     ignore_objects=dict(type='list'),
     default_ignore_params=dict(type='list'),
     endpoint_information=dict(type='dict'),
-    delete_objects=dict(type='list'),
+    delete_objects=dict(type='list',default=[]),
     full_config=dict(type='bool',default=True)
 )
 
@@ -355,7 +355,7 @@ class API(object):
         self._update_config = self._module.params.get(self._list_identifier) or []
         self._print_current_config = self._module.params.get('print_current_config')
         self._full_config = self._module.params.get('full_config')
-        self._delete_objects = self._module.params.get('delete_objects',[])
+        self._delete_objects = self._module.params.get('delete_objects')
         self._check_mode = self._module.check_mode or self._print_current_config
 
     def apply_configuration_to_endpoint(self):
