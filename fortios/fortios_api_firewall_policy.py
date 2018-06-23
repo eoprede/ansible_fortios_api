@@ -224,8 +224,9 @@ class FirewallAPI(API):
 
     def apply_configuration_to_endpoint(self):
         self._execute_config_changes()
-        self._build_object_map()
-        self._move_existing_policies()
+        if self._full_config:
+            self._build_object_map()
+            self._move_existing_policies()
         if not self._check_mode:
             message, changed, failed = self._process_response()
             changed = changed or self._order_changed()

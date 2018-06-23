@@ -1,6 +1,10 @@
 # ansible_fortios_api
 Fortios API module for Ansible
 
+## Version history
+
+- 1.0 - initial release
+- 1.1 - addition of full_config feature
 
 ## Installation
 Copy content of fortios folder to ansible/lib/ansible/modules/network/fortios
@@ -26,9 +30,13 @@ fw_inventory_example playbook goes through some configuration and shows one of t
 ## How this module works
 This module serves as the interface between Ansible and Fortios API. It can take any parameter that API accepts and send it over.
 
-It's very important to note that this module takes the end-state config on the object level. I.e. if you have policies 1, 2 and 3
-configured on the Firewall and you run a playbook that has policies 4 and 5, the end configuration on the firewall will have
+It's very important to note that this module by default takes the end-state config on the object level. I.e. if you have policies 1,
+2 and 3 configured on the Firewall and you run a playbook that has policies 4 and 5, the end configuration on the firewall will have
 policies 4 and 5 configured, while policied 1-3 will be deleted.
+
+If such behavior is not desired, make sure that full_config parameter is set to false. In this mode, you can delete specific objects
+by supplying their ID (usually ID or Name) in a delete_objects list. Please note that in this mode firewall_policy module will not
+attempt to change order of policies, as it is not possible to restructure them without having a full list of policies provided.
 
 Within the object, only the values that are specified will be changed. I.e. if you have configured policy 1 and run a playbook
 that has policy 1 with only a value of "comment=test comment", then only the comment field of the policy will be changed.
@@ -65,10 +73,15 @@ conn_params - connection parameters, how to reach firewall and how to communicat
     proxies - if proxy is needed, specify it in the requests format (i.e. http: socks5://127.0.0.1:9000), see module code for example
 list_of_objects - this is the list referenced in list_identifier. Its name and content changes based on the module. Note that this value
                   must be list all of the times, even if it is a list of 1 element.
-permanent_objects - objects by ID that can not be deleted. Instead, when they are not present in the end state config, module will try to
+permanent_objects - list of objects by ID that can not be deleted. Instead, when they are not present in the end state config, module will try to
                     reset them to defaults. Currently used only in the interface module.
-ignore_objects - objects by ID that will be ignored by the module. Useful if you don't want your module to mess with management interface,
+ignore_objects - list of objects by ID that will be ignored by the module. Useful if you don't want your module to mess with management interface,
                  also can be used to not mess with built-in firewall addresses or services (see example playbooks).
+full_config - boolean, added in 1.1. If true (defaul value), module assumes that provided objects in the config are the only objects that
+              should be present on the device and deletes the rest of them. If false, module only creates new objects, modifies existing
+              ones and deletes only the objects in the delete_objects list provided by user. False value brings behavior of this module
+              closer in line with most of the other networking modules.
+delete_objects - list of objects by ID that will be deleted, only used if full_confg is false.
 ```
 
 ## Known gotchas

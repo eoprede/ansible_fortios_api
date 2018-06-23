@@ -225,7 +225,9 @@ fortios_api_argument_spec = dict(
     permanent_objects=dict(type='list'),
     ignore_objects=dict(type='list'),
     default_ignore_params=dict(type='list'),
-    endpoint_information=dict(type='dict')
+    endpoint_information=dict(type='dict'),
+    delete_objects=dict(type='list',default=[]),
+    full_config=dict(type='bool',default=True)
 )
 
 
@@ -352,6 +354,8 @@ class API(object):
         self._module = AnsibleModule(self._argument_spec, supports_check_mode=True)
         self._update_config = self._module.params.get(self._list_identifier) or []
         self._print_current_config = self._module.params.get('print_current_config')
+        self._full_config = self._module.params.get('full_config')
+        self._delete_objects = self._module.params.get('delete_objects')
         self._check_mode = self._module.check_mode or self._print_current_config
 
     def apply_configuration_to_endpoint(self):
@@ -397,18 +401,34 @@ class API(object):
                 self.fail("No or incorrect object identifier specified. List endpoints require an object identifier, typically name or id.")
 
     def _delete_unused_objects(self):
-        if not self._update_config and not self._check_mode:
+        if not self._update_config and not self._check_mode and self._full_config:
             self._remove(self._endpoint)
             self._get_current_configuration()
 
-        unused_objects = [identifier for identifier in self._existing_object_ids
+        if self._full_config:
+            unused_objects = [identifier for identifier in self._existing_object_ids
+                          if identifier not in self._used_object_ids and
+                          identifier not in self._permanent_object_ids and
+                          identifier not in self._ignore_object_ids]
+        else:
+            unused_objects = [identifier for identifier in self._delete_objects
                           if identifier not in self._used_object_ids and
                           identifier not in self._permanent_object_ids and
                           identifier not in self._ignore_object_ids]
 
         failures = {}
         for object_identifier in unused_objects:
-            if not self._check_mode:
+            if not self._full_config and not self._check_mode:
+                response = self._remove(
+                    '/'.join([self._endpoint, str(object_identifier)]))
+                if response['http_status'] == 200:
+                    self._remove_object_from_current_config(object_identifier)
+                elif response['http_status'] == 404:
+                    continue #trying to remove object that doesn't exist, no actions needed
+                else:
+                    failures[object_identifier] = self.http_status_codes[
+                        response['http_status']]
+            elif not self._check_mode:
                 response = self._remove(
                     '/'.join([self._endpoint, str(object_identifier)]))
                 if response['http_status'] == 200:
@@ -433,8 +453,12 @@ class API(object):
                             not self._diff_unknown(self._get_current_object(o), o)]
         self._object_ids_to_update = [o[self._object_identifier] for o in self._update_config if o[self._object_identifier] in self._existing_object_ids and
                                       o[self._object_identifier] not in matching_objects]
-        self._permanent_object_ids_to_reset = [obj_id for obj_id in self._permanent_object_ids if obj_id not in self._object_ids_to_update and
+        if self._update_config:
+            self._permanent_object_ids_to_reset = [obj_id for obj_id in self._permanent_object_ids if obj_id not in self._object_ids_to_update and
                                                obj_id not in matching_objects]
+        else:
+            self._permanent_object_ids_to_reset = [obj_id for obj_id in self._permanent_object_ids if obj_id in self._delete_objects and
+                                                obj_id not in self._object_ids_to_update and obj_id not in matching_objects]
 
         failures = {}
         self._update_temporary_and_permanent_objects(failures)
