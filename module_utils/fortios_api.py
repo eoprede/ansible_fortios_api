@@ -458,7 +458,7 @@ class API(object):
                                                obj_id not in matching_objects]
         else:
             self._permanent_object_ids_to_reset = [obj_id for obj_id in self._permanent_object_ids if obj_id in self._delete_objects and
-                                                not in self._object_ids_to_update and obj_id not in matching_objects]
+                                                obj_id not in self._object_ids_to_update and obj_id not in matching_objects]
 
         failures = {}
         self._update_temporary_and_permanent_objects(failures)
