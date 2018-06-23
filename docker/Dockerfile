@@ -1,6 +1,6 @@
 FROM alpine:3.7
 
-ENV ANSIBLE_VERSION 2.5.3
+ENV ANSIBLE_VERSION 2.5.5
 
 ENV BUILD_PACKAGES \
 bash \
@@ -53,7 +53,7 @@ echo "[local]" >> /etc/ansible/hosts && \
 echo "localhost" >> /etc/ansible/hosts
 
 RUN mkdir /source
-RUN cd /source && git clone https://github.com/eoprede/ansible_fortios_api.git
+RUN cd /source && git clone -b v1.1 https://github.com/eoprede/ansible_fortios_api.git
 RUN rsync -a /source/ansible_fortios_api/module_utils/ /usr/lib/python2.7/site-packages/ansible/module_utils/ && \
 rsync -a /source/ansible_fortios_api/fortios/ /usr/lib/python2.7/site-packages/ansible/modules/network/fortios/
 
