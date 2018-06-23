@@ -8,7 +8,7 @@ It's mainly a convenience thing - instead of installing Ansible and then doing a
 
 Another use case - running multiple different Ansible versions on the same host - I need to do it now, where systems guys are running 2.4 and I need additional F5 modules that are available in 2.6
 
-Not to mention that there are still people who use Windows machines and containers provide nice and easy way to run Ansible from it (theoretically, I didn't have a chance to test this claim yet).
+Not to mention that there are still people who use Windows machines and containers provide nice and easy way to run Ansible from it (you just need to use absolute paths to forward the directory).
 
 ## How?
 

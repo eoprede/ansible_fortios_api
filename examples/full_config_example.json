@@ -41,5 +41,19 @@
         }
       ]
     }
+  },
+  {
+    "name": "Resetting permanent object to default",
+    "fortios_api_interface": {
+      "conn_params": "{{ test_fw }}",
+      "full_config": false,
+      "delete_objects": [
+        "wan2"
+      ],
+      "permanent_objects": [
+        "wan2"
+      ],
+      "interfaces": null
+    }
   }
 ]
