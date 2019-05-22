@@ -14,15 +14,16 @@ ANSIBLE_METADATA = {'metadata_version': '1.0',
 
 DOCUMENTATION = '''
 ---
-module: fortios_api_firewall_service
+module: fortios_api_firewall_service_group
 extends_documentation_fragment: fortios_api_doc
 version_added: "2.4"
-short_description: Manages Firewall custom service configuration.
+short_description: Manages Firewall custom service group configuration.
 description:
-    - Manages Firewall custom service configuration.
+    - Manages Firewall custom service group configuration.
 author:
     - Will Wagner (@willwagner602)
       Eugene Opredelennov (@eoprede)
+      Daryl Banttari (@dbanttari)
 notes:
     - Tested against Fortigate v5.4.5 VM
     - Assumes the list of default (permanent) objects. This list may have to be edited in the library (or moved to device config) if it changes over time.
@@ -30,33 +31,22 @@ notes:
 options:
     services:
         description:
-            - Full list of services to be applied to the Firewall. Note that any service not present in the list will be DELETED.
+            - Full list of service groups to be applied to the Firewall. Note that any service group not present in the list will be DELETED.
         required: true
         suboptions:
             name:
                 description:
                     - Name of the firewall service
                 required: true
-            comment:
+            groups:
                 description:
-                    - Comment for the firewall service
-                required: false
-                default: null
-            tcp-portrange:
-                description:
-                    - TCP ports used by the service separated by space, use '-' for multiple ports
-                required: false
-                default: null
-            udp-portrange:
-                description:
-                    - UDP ports used by the service separated by space, use '-' for multiple ports
-                required: false
-                default: null
+                    - List of named services
+                required: true
 '''
 EXAMPLES = '''
 # Sample FW service
 - name: update firewall services
-    fortios_api_firewall_service:
+    fortios_api_firewall_service_group:
       print_current_config: false
       conn_params:
         fortigate_username: admin
@@ -67,14 +57,9 @@ EXAMPLES = '''
         secure: false
         proxies:
             http: socks5://127.0.0.1:9000
-      services:
-      - name: allow_outbound_test
-        comment: allow_outbound_test
-        tcp-portrange: 25 53 80 443 200-201
-        udp-portrange: '69'
-      - name: test_tcp_9993
-        comment: test_tcp_9993
-        tcp-portrange: '9993'
+      groups:
+      - name: dns_ldap
+        services: DNS LDAP LDAPS
 '''
 
 RETURN = '''
@@ -102,19 +87,11 @@ changed:
 from ansible.module_utils.fortios_api import API
 
 system_global_api_args = {
-    'endpoint': 'cmdb/firewall.service/custom',
-    'list_identifier': 'services',
+    'endpoint': 'cmdb/firewall.service/group',
+    'list_identifier': 'groups',
     'object_identifier': 'name',
     'default_ignore_params': [],
-    'ignore_objects': ['ALL', 'DNS', 'HTTP', 'HTTPS', 'IMAP', 'IMAPS', 'LDAP', 'DCE-RPC', 'POP3',
-                       'POP3S', 'SAMBA', 'SMTP', 'SMTPS', 'KERBEROS', 'LDAP_UDP', 'SMB', 'webproxy',
-                       'ALL_TCP', 'ALL_UDP', 'ALL_ICMP', 'ALL_ICMP6', 'GRE', 'AH', 'ESP', 'AOL', 'BGP', 'DHCP', 'FINGER', 'FTP',
-                       'FTP_GET', 'FTP_PUT', 'GOPHER', 'H323', 'IKE', 'Internet-Locator-Service', 'IRC', 'L2TP', 'NetMeeting',
-                       'NFS', 'NNTP', 'NTP', 'OSPF', 'PC-Anywhere', 'PING', 'TIMESTAMP', 'INFO_REQUEST', 'INFO_ADDRESS',
-                       'ONC-RPC', 'PPTP', 'QUAKE', 'RAUDIO', 'REXEC', 'RIP', 'RLOGIN', 'RSH', 'SCCP', 'SIP', 'SIP-MSNmessenger',
-                       'SNMP', 'SSH', 'SYSLOG', 'TALK', 'TELNET', 'TFTP', 'MGCP', 'UUCP', 'VDOLIVE', 'WAIS', 'WINFRAME',
-                       'X-WINDOWS', 'PING6', 'MS-SQL', 'MYSQL', 'RDP', 'VNC', 'DHCP6', 'SQUID', 'SOCKS', 'WINS', 'RADIUS',
-                       'RADIUS-OLD', 'CVSPSERVER', 'AFS3', 'TRACEROUTE', 'RTSP', 'MMS', 'NONE']
+    'ignore_objects': []
 }
 
 
